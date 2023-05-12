@@ -15,7 +15,7 @@
               <div class="d-flex justify-content-center py-4">
                 <a href="#" class="logo d-flex align-items-center w-auto">
                   <img src="../assets/img/logo.png" alt="">
-                  <span class="d-none d-lg-block">NiceAdmin</span>
+                  <span class="d-none d-lg-block" th:text="#{company.partner.name}">회사명</span>
                 </a>
               </div><!-- End Logo -->
 
@@ -28,37 +28,40 @@
                     <p class="text-center small">Enter your personal details to create account</p>
                   </div>
 
-                  <form class="row g-3 needs-validation" th:action th:object="${joinForm}" method="post" >
+                  <form class="row g-3 needs-validation" th:action th:object="${partnerJoinFormDto}" method="post" >
                     <div class="col-12">
                       <label for="loginId" class="form-label">아이디</label>
-                      <input type="email" class="form-control" id="loginId" th:field="*{loginId}" required placeholder="아이디는 이메일로 작성해주세요.">
-                      <div class="invalid-feedback">Please enter a valid Email adddress!</div>
+                      <input type="email" class="form-control" id="loginId" th:field="*{loginId}" th:errorclass="field-error"
+                             placeholder="아이디는 이메일로 작성해주세요.">
+                      <div class="field-error" th:errors="*{loginId}">아이디 오류</div>
+                      <div th:if="${#fields.hasGlobalErrors()}">
+                        <p class="field-error" th:each="err : ${#fields.globalErrors()}"
+                           th:text="${err}">중복아이디</p>
+                      </div>
                     </div>
 
                     <div class="col-12">
                       <label for="password" class="form-label">비밀번호</label>
-                      <input type="password" class="form-control" id="password" th:field="*{password}" required>
-                      <div class="invalid-feedback">Please enter your password!</div>
+                      <input type="password" class="form-control" id="password" th:field="*{password}" th:errorclass="field-error"  required>
+                      <div class="field-error" th:errors="*{password}">비밀번호 오류</div>
                     </div>
 
                     <div class="col-12">
                       <label class="col-form-label" for="bankName">은행</label>
-                      <select class="form-select" aria-label="Default select example" id="bankName" th:field="*{bankName}">
+                      <select class="form-select" aria-label="Default select example" id="bankName" th:field="*{bankName}" th:errorclass="field-error">
                         <option value="" selected>은행을 선택해주세요</option>
                         <option value="004">국민</option>
                         <option value="011">농협</option>
                         <option value="088">신한</option>
                         <option value="090">카카오뱅크</option>
                       </select>
-                      <div class="invalid-feedback">Please enter your password!</div>
+                      <div class="field-error" th:errors="*{bankName}">은행이름 오류</div>
                     </div>
 
                     <div class="col-12">
                       <label for="bankAccount" class="form-label">은행 계좌</label>
-                      <div class="input-group has-validation">
-                        <input type="number" class="form-control" id="bankAccount" th:field="*{bankAccount}" required>
-                        <div class="invalid-feedback">Please choose a username.</div>
-                      </div>
+                      <input type="number" class="form-control" id="bankAccount" th:field="*{bankAccount}" th:errorclass="field-error">
+                      <div class="field-error" th:errors="*{bankAccount}">은행계좌 오류</div>
                     </div>
 
 <!--                    <div class="col-12">-->

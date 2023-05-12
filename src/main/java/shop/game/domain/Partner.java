@@ -40,4 +40,9 @@ public class Partner {
         this.bankAccount = bankAccount;
         this.createdDate = createdDate;
     }
+
+    @PrePersist
+    public void prePersist() {
+        if (getApproval() == null) this.approval = Approval.READY;
+    }
 }

@@ -6,14 +6,17 @@ logging:
 
 
 spring:
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/test
-    username: sa
-    password:
+#  datasource:
+#    url: jdbc:h2:tcp://localhost/~/test
+#    username: sa
+#    password:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
+
+  messages:
+    basename: messages, errors

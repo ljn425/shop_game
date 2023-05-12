@@ -6,6 +6,9 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,7 +58,7 @@ public class PartnerController {
      */
     @GetMapping("/join")
     public String joinForm(PartnerJoinFormDto partnerJoinFormDto, Model model) {
-        model.addAttribute("joinForm", partnerJoinFormDto);
+        model.addAttribute("partnerJoinFormDto", partnerJoinFormDto);
         return "partner/join";
     }
 
@@ -64,13 +67,18 @@ public class PartnerController {
      * @param partnerJoinFormDto
      */
     @PostMapping("/join")
-    public String join(@ModelAttribute PartnerJoinFormDto partnerJoinFormDto) {
-        log.debug("partnerJoinFormDto = {}", partnerJoinFormDto);
+    public String join(@Validated @ModelAttribute PartnerJoinFormDto partnerJoinFormDto, BindingResult bindingResult) {
+        log.debug("joinForm = {}", partnerJoinFormDto);
 
         //중복아이디 체크
         if (!partnerService.isLoginEmailAvailable(partnerJoinFormDto.getLoginId())) {
-            throw new DuplicateKeyException("중복아이디 예외 발생");
-//            return "partner/join";
+            bindingResult.addError(new ObjectError("partnerJoinFormDto", new String[]{"duplicatedId"}, null, "아이디가 이미 존재합니다."));
+            return "partner/join";
+        }
+
+        if (bindingResult.hasErrors()) {
+            log.debug("errors={}", bindingResult);
+            return "partner/join";
         }
 
         Partner partner = convertToPartner(partnerJoinFormDto);

@@ -4,20 +4,24 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.CookieTheftException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import shop.game.SessionConst;
 import shop.game.domain.Partner;
 import shop.game.dto.LoginFormDto;
+import shop.game.dto.LoginPartnerDto;
 import shop.game.dto.PartnerJoinFormDto;
 import shop.game.service.PartnerService;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 
 @Controller
@@ -27,7 +31,14 @@ import java.time.LocalDateTime;
 public class PartnerController {
 
     private final PartnerService partnerService;
-    private final PasswordEncoder passwordEncoder;
+
+    @GetMapping("/main")
+    public String main(@SessionAttribute(name = SessionConst.LOGIN_PARTNER, required = false) Partner partner,
+                       Model model) {
+
+        model.addAttribute("partner", new LoginPartnerDto(partner.getLoginEmail()));
+        return "partner/main";
+    }
 
     /**
      * 파트너 로그인 폼
@@ -35,9 +46,21 @@ public class PartnerController {
      * @param model
      */
     @GetMapping("/login")
-    public String loginForm(LoginFormDto loginFormDto, Model model) {
-        model.addAttribute("loginForm", loginFormDto);
+    public String loginForm(
+            @CookieValue(value = "rememberId", required = false) String rememberId,
+            LoginFormDto loginFormDto,
+            Model model) {
+
+        rememberIdCheck(rememberId, loginFormDto);
+        model.addAttribute("loginFormDto", loginFormDto);
         return "partner/login";
+    }
+
+    private void rememberIdCheck(String rememberId, LoginFormDto loginFormDto) {
+        if (rememberId != null) {
+            loginFormDto.setLoginId(rememberId);
+            loginFormDto.setLoginIdCheck(true);
+        }
     }
 
     /**
@@ -45,10 +68,37 @@ public class PartnerController {
      * @param loginFormDto
      */
     @PostMapping("/login")
-    public String login(@ModelAttribute LoginFormDto loginFormDto) {
+    public String login(
+            @Validated @ModelAttribute LoginFormDto loginFormDto,
+            BindingResult bindingResult,
+            @RequestParam(defaultValue = "/partner/main") String redirectURL,
+            HttpServletRequest request,
+            HttpServletResponse response
+           ) {
+
         log.debug("loginFormDto = {}", loginFormDto);
-        //todo: 로그인세션 처리, 인터셉터
-        return "redirect:/";
+
+        if (bindingResult.hasErrors()) {
+            return "partner/login";
+        }
+
+        //로그인 처리
+        Partner loginPartner = partnerService.login(loginFormDto.getLoginId(), loginFormDto.getLoginPassword());
+        log.debug("loginPartner = {}", loginPartner);
+
+        if (loginPartner == null) {
+            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
+            return "partner/login";
+        }
+
+        //쿠키로 아이디 기억 & 기억삭제
+        partnerService.rememberId(loginFormDto, response);
+
+        //세션에 로그인 회원정보 보관
+        request.getSession()
+                .setAttribute(SessionConst.LOGIN_PARTNER, loginPartner);
+
+        return "redirect:" + redirectURL;
     }
 
     /**
@@ -81,7 +131,7 @@ public class PartnerController {
             return "partner/join";
         }
 
-        Partner partner = convertToPartner(partnerJoinFormDto);
+        Partner partner = partnerService.convertToPartner(partnerJoinFormDto);
 
         partnerService.join(partner);
 
@@ -89,27 +139,24 @@ public class PartnerController {
     }
 
     /**
-     * PartnerJoinFormDto -> Partner
-     * @param partnerJoinFormDto
-     * @return Partner
+     * 회원가입완료 페이지
      */
-    private Partner convertToPartner(PartnerJoinFormDto partnerJoinFormDto) {
-        //비밀번호 암호화
-        String encodedPassword = passwordEncoder.encode(partnerJoinFormDto.getPassword());
-
-        Partner partner = Partner.builder()
-                .loginEmail(partnerJoinFormDto.getLoginId())
-                .password(encodedPassword)
-                .bankName(partnerJoinFormDto.getBankName())
-                .bankAccount(partnerJoinFormDto.getBankAccount())
-                .createdDate(LocalDateTime.now())
-                .build();
-        return partner;
-    }
-
     @GetMapping("/join-finish")
     public String joinFinish() {
         return "partner/join-finish";
     }
 
+    /**
+     * 로그아웃
+     * @param request
+     */
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        log.debug("로그아웃");
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return "redirect:/partner/login";
+    }
 }

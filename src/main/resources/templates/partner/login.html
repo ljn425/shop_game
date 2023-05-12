@@ -23,27 +23,27 @@
               <div class="card mb-3">
 
                 <div class="card-body">
-                  <form class="row g-3" th:action th:object="${loginForm}" method="post">
+                  <form class="row g-3" th:action th:object="${loginFormDto}" method="post">
 
                     <div class="col-12">
                       <label for="loginId" class="form-label" th:text="#{loginForm.id}">아이디</label>
                       <div class="input-group has-validation">
                         <!--<span class="input-group-text" id="inputGroupPrepend">@</span>-->
-                        <input type="text" class="form-control" th:field="*{loginId}" id="loginId" required>
-                        <div class="invalid-feedback">Please enter your username.</div>
+                        <input type="text" class="form-control" th:field="*{loginId}" th:errorclass="field-error" id="loginId" th:value="*{loginId}" required>
+                        <div class="field-error" th:errors="*{loginId}">아이디 오류</div>
                       </div>
                     </div>
 
                     <div class="col-12">
                       <label for="loginPassword" class="form-label" th:text="#{loginForm.password}">비밀번호</label>
-                      <input type="password" class="form-control" th:field="*{loginPassword}" id="loginPassword" required>
-                      <div class="invalid-feedback">Please enter your password!</div>
+                      <input type="password" class="form-control" th:field="*{loginPassword}" th:errorclass="field-error" id="loginPassword" required>
+                      <div class="field-error" th:errors="*{loginPassword}">비밀번호 오류</div>
                     </div>
 
                     <div class="col-12">
                       <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="true" th:field="*{loginIdCheck}" id="rememberMe">
-                        <label class="form-check-label" for="rememberMe" th:text="#{loginForm.rememberMe}">아이디 저장</label>
+                        <input class="form-check-input" type="checkbox" th:field="*{loginIdCheck}" id="loginIdCheck" th:checked="*{loginIdCheck}">
+                        <label class="form-check-label" for="loginIdCheck" th:text="#{loginForm.rememberMe}">아이디 저장</label>
                       </div>
                     </div>
                     <div class="col-12">

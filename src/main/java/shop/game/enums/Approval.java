@@ -1,4 +1,4 @@
-package shop.game.domain;
+package shop.game.enums;
 
 public enum Approval {
     READY, CONFIRM

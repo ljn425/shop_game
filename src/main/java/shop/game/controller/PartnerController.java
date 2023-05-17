@@ -8,7 +8,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import shop.game.SessionConst;
+import shop.game.constants.SessionConst;
+import shop.game.constants.UrlConst;
+import shop.game.constants.ViewConst;
 import shop.game.domain.Partner;
 import shop.game.dto.LoginFormDto;
 import shop.game.dto.LoginPartnerDto;
@@ -28,11 +30,8 @@ public class PartnerController {
     private final PartnerService partnerService;
 
     @GetMapping("/main")
-    public String main(@SessionAttribute(name = SessionConst.LOGIN_PARTNER, required = false) Partner partner,
-                       Model model) {
-
-        model.addAttribute("partner", new LoginPartnerDto(partner.getLoginEmail()));
-        return "partner/main";
+    public String main() {
+        return ViewConst.PARTNER_MAIN;
     }
 
     /**
@@ -48,7 +47,7 @@ public class PartnerController {
 
         rememberIdCheck(rememberId, loginFormDto);
         model.addAttribute("loginFormDto", loginFormDto);
-        return "partner/login";
+        return ViewConst.PARTNER_LOGIN;
     }
 
     private void rememberIdCheck(String rememberId, LoginFormDto loginFormDto) {
@@ -66,13 +65,13 @@ public class PartnerController {
     public String login(
             @Validated @ModelAttribute LoginFormDto loginFormDto,
             BindingResult bindingResult,
-            @RequestParam(defaultValue = "/partner/main") String redirectURL,
+            @RequestParam(defaultValue = UrlConst.PARTNER_MAIN) String redirectURL,
             HttpServletRequest request,
             HttpServletResponse response
            ) {
 
         if (bindingResult.hasErrors()) {
-            return "partner/login";
+            return ViewConst.PARTNER_LOGIN;
         }
 
         //로그인 처리
@@ -80,7 +79,7 @@ public class PartnerController {
 
         if (loginPartner == null) {
             bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
-            return "partner/login";
+            return ViewConst.PARTNER_LOGIN;
         }
 
 
@@ -93,11 +92,7 @@ public class PartnerController {
 
         log.debug("redirectURL = {}", redirectURL);
 
-        if (redirectURL.equals("/")) {
-            return "redirect:/partner/main";
-        }
-
-        return "redirect:" + redirectURL;
+        return redirectURL.equals("/")? "redirect:" + UrlConst.PARTNER_MAIN : "redirect:" + redirectURL;
     }
 
     /**
@@ -108,7 +103,7 @@ public class PartnerController {
     @GetMapping("/join")
     public String joinForm(PartnerJoinFormDto partnerJoinFormDto, Model model) {
         model.addAttribute("partnerJoinFormDto", partnerJoinFormDto);
-        return "partner/join";
+        return ViewConst.PARTNER_JOIN;
     }
 
     /**
@@ -122,12 +117,12 @@ public class PartnerController {
         //중복아이디 체크
         if (!partnerService.isLoginEmailAvailable(partnerJoinFormDto.getLoginId())) {
             bindingResult.addError(new ObjectError("partnerJoinFormDto", new String[]{"duplicatedId"}, null, "아이디가 이미 존재합니다."));
-            return "partner/join";
+            return ViewConst.PARTNER_JOIN;
         }
 
         if (bindingResult.hasErrors()) {
             log.debug("errors={}", bindingResult);
-            return "partner/join";
+            return ViewConst.PARTNER_JOIN;
         }
 
         Partner partner = partnerService.convertToPartner(partnerJoinFormDto);
@@ -142,7 +137,7 @@ public class PartnerController {
      */
     @GetMapping("/join-finish")
     public String joinFinish() {
-        return "partner/join-finish";
+        return ViewConst.PARTNER_JOIN_FINISH;
     }
 
     /**
@@ -157,5 +152,10 @@ public class PartnerController {
             session.invalidate();
         }
         return "redirect:/partner/login";
+    }
+
+    @GetMapping("/game/goods-list")
+    public String goodsList() {
+        return "partner/game/goods-list";
     }
 }

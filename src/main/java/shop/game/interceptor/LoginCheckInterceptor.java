@@ -2,7 +2,9 @@ package shop.game.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.HandlerInterceptor;
-import shop.game.SessionConst;
+import shop.game.constants.SessionConst;
+import shop.game.domain.Partner;
+import shop.game.dto.LoginPartnerDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,11 +20,19 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         HttpSession session = request.getSession(false);
 
-        if (session == null || session.getAttribute(SessionConst.LOGIN_PARTNER) == null) {
+        Object loginPartner = session.getAttribute(SessionConst.LOGIN_PARTNER);
+
+        if (session == null || loginPartner == null) {
             log.debug("미인증 사용자 요청");
             log.debug("requestURI = {}", requestURI);
             response.sendRedirect("/partner/login?redirectURL=" + requestURI);
             return false;
+        }
+
+        if (loginPartner != null) {
+            log.debug("인증 사용자 요청");
+            Partner partner = (Partner) loginPartner;
+            request.setAttribute("partner", new LoginPartnerDto(partner.getLoginEmail()));
         }
 
         return true;

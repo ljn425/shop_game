@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.game.enums.Approval;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ public class Partner {
     private String password;    //비밀번호
 
     @Enumerated(EnumType.STRING)
-    private Approval approval;
+    private Approval approval;  //승인 여부
 
     private String bankName;    //은행
     private String bankAccount; //계좌

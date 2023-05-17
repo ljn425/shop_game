@@ -2,9 +2,6 @@ package shop.game.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.rememberme.CookieTheftException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,11 +15,9 @@ import shop.game.dto.LoginPartnerDto;
 import shop.game.dto.PartnerJoinFormDto;
 import shop.game.service.PartnerService;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.time.LocalDateTime;
 
 @Controller
 @Slf4j
@@ -76,20 +71,18 @@ public class PartnerController {
             HttpServletResponse response
            ) {
 
-        log.debug("loginFormDto = {}", loginFormDto);
-
         if (bindingResult.hasErrors()) {
             return "partner/login";
         }
 
         //로그인 처리
         Partner loginPartner = partnerService.login(loginFormDto.getLoginId(), loginFormDto.getLoginPassword());
-        log.debug("loginPartner = {}", loginPartner);
 
         if (loginPartner == null) {
             bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
             return "partner/login";
         }
+
 
         //쿠키로 아이디 기억 & 기억삭제
         partnerService.rememberId(loginFormDto, response);
@@ -97,6 +90,12 @@ public class PartnerController {
         //세션에 로그인 회원정보 보관
         request.getSession()
                 .setAttribute(SessionConst.LOGIN_PARTNER, loginPartner);
+
+        log.debug("redirectURL = {}", redirectURL);
+
+        if (redirectURL.equals("/")) {
+            return "redirect:/partner/main";
+        }
 
         return "redirect:" + redirectURL;
     }

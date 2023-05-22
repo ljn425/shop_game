@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<!-- ======= Sidebar ======= -->
 <aside id="sidebar" class="sidebar" th:fragment="common_left">
 
     <ul class="sidebar-nav" id="sidebar-nav">
@@ -19,23 +18,13 @@
             </a>
             <ul id="game-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
                 <li>
-                    <a href="/partner/game/goods-list">
-                        <i class="bi bi-circle"></i><span th:text="#{sideMenu.game.register}">제품 등록</span>
+                    <a href="/partner/game/goods">
+                        <i class="bi bi-circle"></i><span th:text="#{sideMenu.game.register}">게임 등록</span>
                     </a>
                 </li>
                 <li>
                     <a href="/partner/game/goods-approval">
-                        <i class="bi bi-circle"></i><span>Form Layouts</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="forms-editors.html">
-                        <i class="bi bi-circle"></i><span>Form Editors</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="forms-validation.html">
-                        <i class="bi bi-circle"></i><span>Form Validation</span>
+                        <i class="bi bi-circle"></i><span th:text="#{sideMenu.game.approval}">게임 신청</span>
                     </a>
                 </li>
             </ul>
@@ -158,7 +147,7 @@
 
     </ul>
 
-</aside><!-- End Sidebar-->
+</aside>
 </body>
 
 </html>

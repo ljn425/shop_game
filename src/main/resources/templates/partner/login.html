@@ -46,6 +46,10 @@
                         <label class="form-check-label" for="loginIdCheck" th:text="#{loginForm.rememberMe}">아이디 저장</label>
                       </div>
                     </div>
+                    <div th:if="${#fields.hasGlobalErrors()}">
+                      <p class="field-error" th:each="err : ${#fields.globalErrors()}"
+                         th:text="${err}">중복오류</p>
+                    </div>
                     <div class="col-12">
                       <button class="btn btn-primary w-100" type="submit">Login</button>
                     </div>

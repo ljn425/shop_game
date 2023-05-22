@@ -6,6 +6,9 @@ public class ViewConst {
     public static final String PARTNER_JOIN_FINISH = "partner/join-finish";
     public static final String PARTNER_LOGIN = "partner/login";
 
+    public static final String PARTNER_GAME_GOODS = "partner/game/goods";
+
+    public static final String PARTNER_GAME_GOODS_REGISTER = "partner/game/goods-register";
 
 
 

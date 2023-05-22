@@ -2,6 +2,7 @@ package shop.game.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,9 +13,12 @@ import shop.game.constants.SessionConst;
 import shop.game.constants.UrlConst;
 import shop.game.constants.ViewConst;
 import shop.game.domain.Partner;
+import shop.game.dto.GoodsRegisterFormDto;
 import shop.game.dto.LoginFormDto;
-import shop.game.dto.LoginPartnerDto;
 import shop.game.dto.PartnerJoinFormDto;
+import shop.game.dto.SessionLoginDto;
+import shop.game.enums.ErrorCode;
+import shop.game.service.GameService;
 import shop.game.service.PartnerService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +32,10 @@ import javax.servlet.http.HttpSession;
 public class PartnerController {
 
     private final PartnerService partnerService;
+    private final GameService gameService;
+
+    @Value("${file.dir}")
+    private String fileDir;
 
     @GetMapping("/main")
     public String main() {
@@ -78,17 +86,17 @@ public class PartnerController {
         Partner loginPartner = partnerService.login(loginFormDto.getLoginId(), loginFormDto.getLoginPassword());
 
         if (loginPartner == null) {
-            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
+            bindingResult.reject(ErrorCode.LoginFail.getCodeName(), "아이디 또는 비밀번호가 맞지 않습니다.");
             return ViewConst.PARTNER_LOGIN;
         }
-
 
         //쿠키로 아이디 기억 & 기억삭제
         partnerService.rememberId(loginFormDto, response);
 
         //세션에 로그인 회원정보 보관
+        SessionLoginDto sessionLoginDto = partnerService.convertToSessionLoginDto(loginPartner);
         request.getSession()
-                .setAttribute(SessionConst.LOGIN_PARTNER, loginPartner);
+                .setAttribute(SessionConst.LOGIN_PARTNER, sessionLoginDto);
 
         log.debug("redirectURL = {}", redirectURL);
 
@@ -116,7 +124,7 @@ public class PartnerController {
 
         //중복아이디 체크
         if (!partnerService.isLoginEmailAvailable(partnerJoinFormDto.getLoginId())) {
-            bindingResult.addError(new ObjectError("partnerJoinFormDto", new String[]{"duplicatedId"}, null, "아이디가 이미 존재합니다."));
+            bindingResult.addError(new ObjectError("partnerJoinFormDto", new String[]{ErrorCode.DuplicatedId.getCodeName()}, null, "아이디가 이미 존재합니다."));
             return ViewConst.PARTNER_JOIN;
         }
 
@@ -154,8 +162,38 @@ public class PartnerController {
         return "redirect:/partner/login";
     }
 
-    @GetMapping("/game/goods-list")
+    /**
+     * 게임 등록리스트
+     */
+    @GetMapping("/game/goods")
     public String goodsList() {
-        return "partner/game/goods-list";
+        return ViewConst.PARTNER_GAME_GOODS;
+    }
+
+    /**
+     * 게임 등록폼
+     */
+    @GetMapping("/game/goods/register")
+    public String goodsRegisterForm(GoodsRegisterFormDto registerFormDto, Model model) {
+        model.addAttribute("registerFormDto", registerFormDto);
+        return ViewConst.PARTNER_GAME_GOODS_REGISTER;
+    }
+
+    @PostMapping("/game/goods/register")
+    public String goodsRegister(@ModelAttribute("registerFormDto") GoodsRegisterFormDto registerFormDto,
+                                BindingResult bindingResult,
+                                @SessionAttribute(SessionConst.LOGIN_PARTNER) SessionLoginDto sessionLoginDto) {
+        log.debug("partner = {}", sessionLoginDto);
+        log.debug("registerFormDto = {}", registerFormDto);
+
+        if(bindingResult.hasErrors()) {
+            return ViewConst.PARTNER_GAME_GOODS_REGISTER;
+        }
+
+        gameService.save(registerFormDto);
+
+
+
+        return "redirect:/partner/game/goods";
     }
 }

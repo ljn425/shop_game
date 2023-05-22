@@ -5,6 +5,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import shop.game.constants.SessionConst;
 import shop.game.domain.Partner;
 import shop.game.dto.LoginPartnerDto;
+import shop.game.dto.SessionLoginDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,8 +20,11 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         String requestURI = request.getRequestURI();
 
         HttpSession session = request.getSession(false);
+        Object loginPartner = null;
 
-        Object loginPartner = session.getAttribute(SessionConst.LOGIN_PARTNER);
+        if (session != null ) {
+            loginPartner = session.getAttribute(SessionConst.LOGIN_PARTNER);
+        }
 
         if (session == null || loginPartner == null) {
             log.debug("미인증 사용자 요청");
@@ -31,7 +35,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         if (loginPartner != null) {
             log.debug("인증 사용자 요청");
-            Partner partner = (Partner) loginPartner;
+            SessionLoginDto partner = (SessionLoginDto) loginPartner;
             request.setAttribute("partner", new LoginPartnerDto(partner.getLoginEmail()));
         }
 

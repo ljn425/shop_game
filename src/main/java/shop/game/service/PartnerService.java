@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import shop.game.domain.Partner;
 import shop.game.dto.LoginFormDto;
 import shop.game.dto.PartnerJoinFormDto;
+import shop.game.dto.SessionLoginDto;
 import shop.game.repository.PartnerRepository;
 
 import javax.servlet.http.Cookie;
@@ -72,6 +73,19 @@ public class PartnerService {
                 .orElse(null);
     }
 
+    public SessionLoginDto convertToSessionLoginDto(Partner partner) {
+        SessionLoginDto sessionLoginDto = SessionLoginDto.builder()
+                .id(partner.getId())
+                .loginEmail(partner.getLoginEmail())
+                .build();
+        return sessionLoginDto;
+    }
+
+    /**
+     * 아이디 저장하기
+     * @param loginFormDto
+     * @param response
+     */
     public void rememberId(LoginFormDto loginFormDto, HttpServletResponse response) {
         Cookie cookie;
         if (loginFormDto.isLoginIdCheck()) {

@@ -32,6 +32,10 @@ public class Partner {
         this.password = password;
     }
 
+    public Partner(Long id) {
+        this.id = id;
+    }
+
     @Builder
     public Partner(Long id, String loginEmail, String password, String bankName, String bankAccount, LocalDateTime createdDate) {
         this.id = id;

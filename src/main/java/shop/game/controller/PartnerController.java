@@ -24,6 +24,7 @@ import shop.game.service.PartnerService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 @Controller
 @Slf4j
@@ -33,9 +34,6 @@ public class PartnerController {
 
     private final PartnerService partnerService;
     private final GameService gameService;
-
-    @Value("${file.dir}")
-    private String fileDir;
 
     @GetMapping("/main")
     public String main() {
@@ -182,7 +180,7 @@ public class PartnerController {
     @PostMapping("/game/goods/register")
     public String goodsRegister(@ModelAttribute("registerFormDto") GoodsRegisterFormDto registerFormDto,
                                 BindingResult bindingResult,
-                                @SessionAttribute(SessionConst.LOGIN_PARTNER) SessionLoginDto sessionLoginDto) {
+                                @SessionAttribute(SessionConst.LOGIN_PARTNER) SessionLoginDto sessionLoginDto) throws IOException {
         log.debug("partner = {}", sessionLoginDto);
         log.debug("registerFormDto = {}", registerFormDto);
 
@@ -190,9 +188,7 @@ public class PartnerController {
             return ViewConst.PARTNER_GAME_GOODS_REGISTER;
         }
 
-        gameService.save(registerFormDto);
-
-
+        gameService.register(registerFormDto, sessionLoginDto);
 
         return "redirect:/partner/game/goods";
     }

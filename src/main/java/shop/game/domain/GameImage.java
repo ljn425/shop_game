@@ -1,5 +1,6 @@
 package shop.game.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.game.enums.ImageType;
@@ -26,4 +27,10 @@ public class GameImage extends Base{
 
     @Enumerated(EnumType.STRING)
     private ImageType imageType;
+    @Builder
+    public GameImage(Game game, String originalName, String storedName) {
+        this.game = game;
+        this.originalName = originalName;
+        this.storedName = storedName;
+    }
 }

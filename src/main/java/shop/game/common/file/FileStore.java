@@ -26,8 +26,12 @@ public class FileStore {
 
         String originalFilename = multipartFile.getOriginalFilename();
         String storeFileName = createStoreFileName(originalFilename);
+        String ext = extractExt(originalFilename);
+        Long fileSize = multipartFile.getSize();
+
         multipartFile.transferTo(new File(getFullPath(storeFileName)));
-        return new UploadFile(originalFilename, storeFileName);
+
+        return new UploadFile(originalFilename, storeFileName, ext, fileSize);
     }
 
     public List<UploadFile> storeFiles(List<MultipartFile> multipartFiles) throws IOException {

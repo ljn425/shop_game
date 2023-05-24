@@ -1,5 +1,5 @@
 package shop.game.enums;
 
 public enum ImageType {
-    Thumbnail, Detail
+    COVER, Thumbnail, Detail
 }

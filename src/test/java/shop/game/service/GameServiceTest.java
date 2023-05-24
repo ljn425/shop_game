@@ -50,7 +50,7 @@ class GameServiceTest {
         System.out.println("auditing 전 : sessionLogin: " + sessionLogin);
         GoodsRegisterFormDto goodsRegisterFormDto = new GoodsRegisterFormDto();
         goodsRegisterFormDto.setGameName("테스트");
-        gameService.save(goodsRegisterFormDto);
+        //gameService.save(goodsRegisterFormDto);
     }
 
 

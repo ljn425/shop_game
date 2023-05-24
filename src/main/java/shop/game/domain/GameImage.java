@@ -27,10 +27,14 @@ public class GameImage extends Base{
 
     @Enumerated(EnumType.STRING)
     private ImageType imageType;
+
     @Builder
-    public GameImage(Game game, String originalName, String storedName) {
+    public GameImage(Game game, String originalName, String storedName, Long size, String extension, ImageType imageType) {
         this.game = game;
         this.originalName = originalName;
         this.storedName = storedName;
+        this.size = size;
+        this.extension = extension;
+        this.imageType = imageType;
     }
 }

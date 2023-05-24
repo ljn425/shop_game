@@ -17,7 +17,9 @@ import shop.game.dto.GoodsRegisterFormDto;
 import shop.game.dto.LoginFormDto;
 import shop.game.dto.PartnerJoinFormDto;
 import shop.game.dto.SessionLoginDto;
+import shop.game.enums.CategoryType;
 import shop.game.enums.ErrorCode;
+import shop.game.enums.GameType;
 import shop.game.service.GameService;
 import shop.game.service.PartnerService;
 
@@ -174,17 +176,22 @@ public class PartnerController {
     @GetMapping("/game/goods/register")
     public String goodsRegisterForm(GoodsRegisterFormDto registerFormDto, Model model) {
         model.addAttribute("registerFormDto", registerFormDto);
+        model.addAttribute("gameTypes", GameType.values());
+        model.addAttribute("categoryTypes", gameService.createMapFromCategoryEnums());
         return ViewConst.PARTNER_GAME_GOODS_REGISTER;
     }
 
     @PostMapping("/game/goods/register")
-    public String goodsRegister(@ModelAttribute("registerFormDto") GoodsRegisterFormDto registerFormDto,
+    public String goodsRegister(@Validated @ModelAttribute("registerFormDto") GoodsRegisterFormDto registerFormDto,
                                 BindingResult bindingResult,
-                                @SessionAttribute(SessionConst.LOGIN_PARTNER) SessionLoginDto sessionLoginDto) throws IOException {
+                                @SessionAttribute(SessionConst.LOGIN_PARTNER) SessionLoginDto sessionLoginDto,
+                                Model model) throws IOException {
         log.debug("partner = {}", sessionLoginDto);
         log.debug("registerFormDto = {}", registerFormDto);
+        log.debug("bindingResult = {}", bindingResult);
 
         if(bindingResult.hasErrors()) {
+            model.addAttribute("categoryTypes", gameService.createMapFromCategoryEnums());
             return ViewConst.PARTNER_GAME_GOODS_REGISTER;
         }
 

@@ -9,9 +9,6 @@ import javax.validation.ConstraintValidatorContext;
 public class ValidMultipartFileValidator implements ConstraintValidator<ValidMultipartFile, MultipartFile> {
     @Override
     public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
-        //System.out.println("file = " + file);
-        //System.out.println("file.getOriginalFilename() = " + file.getOriginalFilename());
-        //System.out.println("file.isEmpty() = " + file.isEmpty());
         return !file.isEmpty();
     }
 }

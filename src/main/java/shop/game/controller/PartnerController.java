@@ -2,7 +2,10 @@ package shop.game.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,13 +16,8 @@ import shop.game.constants.SessionConst;
 import shop.game.constants.UrlConst;
 import shop.game.constants.ViewConst;
 import shop.game.domain.Partner;
-import shop.game.dto.GoodsRegisterFormDto;
-import shop.game.dto.LoginFormDto;
-import shop.game.dto.PartnerJoinFormDto;
-import shop.game.dto.SessionLoginDto;
-import shop.game.enums.CategoryType;
+import shop.game.dto.*;
 import shop.game.enums.ErrorCode;
-import shop.game.enums.GameType;
 import shop.game.service.GameService;
 import shop.game.service.PartnerService;
 
@@ -31,6 +29,7 @@ import java.io.IOException;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@EnableSpringDataWebSupport
 @RequestMapping("/partner")
 public class PartnerController {
 
@@ -166,7 +165,14 @@ public class PartnerController {
      * 게임 등록리스트
      */
     @GetMapping("/game/goods")
-    public String goodsList() {
+    public String goodsList(@SessionAttribute(SessionConst.LOGIN_PARTNER) SessionLoginDto sessionLoginDto,
+                            @PageableDefault(size = 2) Pageable pageable,
+                            HttpServletRequest request,
+                            Model model) {
+        Page<GoodsRegisterListDto> goodsList = gameService.goodsPaging(sessionLoginDto.getId(), pageable);
+
+        model.addAttribute("pagePath", request.getRequestURI());
+        model.addAttribute("pageList", goodsList);
         return ViewConst.PARTNER_GAME_GOODS;
     }
 
@@ -174,9 +180,9 @@ public class PartnerController {
      * 게임 등록폼
      */
     @GetMapping("/game/goods/register")
-    public String goodsRegisterForm(GoodsRegisterFormDto registerFormDto, Model model) {
+    public String goodsRegisterForm(GoodsRegisterFormDto registerFormDto, Pageable pageable, Model model) {
         model.addAttribute("registerFormDto", registerFormDto);
-        model.addAttribute("gameTypes", GameType.values());
+        //model.addAttribute("gameTypes", GameType.values());
         model.addAttribute("categoryTypes", gameService.createMapFromCategoryEnums());
         return ViewConst.PARTNER_GAME_GOODS_REGISTER;
     }

@@ -25,7 +25,7 @@ public class GoodsRegisterFormDto {
     @NotBlank
     private String description;
 
-    @ValidMultipartFile
+    @ValidMultipartFile(message = "파일을 선택해주세요.")
     private MultipartFile thumbnail;
 
     @Size(min =1, message = "최소 1개 이상의 카테고리를 선택해주세요.")

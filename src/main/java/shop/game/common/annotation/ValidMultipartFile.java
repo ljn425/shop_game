@@ -1,10 +1,6 @@
 package shop.game.common.annotation;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import javax.validation.Constraint;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 import javax.validation.constraints.NotNull;
 import java.lang.annotation.ElementType;
@@ -17,8 +13,11 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidMultipartFile {
-    String message() default "The file must not be null";
+    String message() default "{javax.validation.constraints.NotNull.message}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
+
 }
+
+
 

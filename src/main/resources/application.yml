@@ -5,6 +5,9 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: trace
 
 
+
+
+
 spring:
 #  datasource:
 #    url: jdbc:h2:tcp://localhost/~/test
@@ -33,4 +36,4 @@ spring:
       max-request-size: 10MB
 
 file:
-  dir: D:/project/images/
+  dir: D:/project/game/src/main/resources/static/assets/img/games/

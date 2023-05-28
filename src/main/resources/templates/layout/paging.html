@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Disabled and active states -->
+<nav aria-label="paging" th:fragment="common_paging(pageList, pagePath)" th:if="${pageList.totalPages > 1}">
+    <ul class="pagination">
+        <!-- previous -->
+        <li class="page-item" th:class="${pageList.isFirst ? 'disabled' : ''}">
+            <a class="page-link" th:href="${pageList.isFirst}? '#' : ${pagePath}+'?page='+${pageList.number - 1}" th:text="이전">Previous</a>
+        </li>
+        <!-- pageNumber -->
+        <li class="page-item"
+            th:each="pageNumber : ${#numbers.sequence(0, pageList.totalPages - 1)}"
+            th:class="${pageNumber == pageList.number ? 'active' : ''}">
+            <a class="page-link" th:href="@{${pagePath}(page=${pageNumber})}" th:text="${pageNumber + 1}">1</a>
+        </li>
+        <!-- next -->
+        <li class="page-item" th:class="${pageList.isLast ? 'disabled' : ''}">
+            <a class="page-link" th:href="${pageList.isLast} ? '#' : ${pagePath}+'?page='+${pageList.number + 1}" th:text="다음">Next</a>
+        </li>
+    </ul>
+</nav>
+<!-- End Disabled and active states -->
+</html>

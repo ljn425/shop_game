@@ -2,6 +2,8 @@ package shop.game.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.game.common.file.FileStore;
@@ -11,14 +13,12 @@ import shop.game.domain.Game;
 import shop.game.domain.GameImage;
 import shop.game.domain.Partner;
 import shop.game.dto.GoodsRegisterFormDto;
+import shop.game.dto.GoodsRegisterListDto;
 import shop.game.dto.SessionLoginDto;
 import shop.game.enums.CategoryType;
 import shop.game.enums.GameType;
 import shop.game.enums.ImageType;
-import shop.game.repository.CategoryRepository;
-import shop.game.repository.GameImageRepository;
-import shop.game.repository.GameRepository;
-import shop.game.repository.PartnerRepository;
+import shop.game.repository.*;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -30,6 +30,8 @@ import java.util.Map;
 @Slf4j
 public class GameService {
     private final GameRepository gameRepository;
+
+    private final GameQueryRepository gameQueryRepository;
     private final PartnerRepository partnerRepository;
     private final FileStore fileStore;
 
@@ -47,7 +49,7 @@ public class GameService {
                 .description(registerFormDto.getDescription())
                 .gameType(GameType.GAME)
                 .build();
-        //gameRepository.save(game);
+        gameRepository.save(game);
 
         GameImage gameImage = GameImage.builder()
                 .game(game)
@@ -67,7 +69,7 @@ public class GameService {
             game.getCategories().add(category);
         }
 
-        gameRepository.save(game);
+        //gameRepository.save(game);
     }
 
     public Map<String, String> createMapFromCategoryEnums() {
@@ -77,5 +79,9 @@ public class GameService {
         }
 
         return categories;
+    }
+
+    public Page<GoodsRegisterListDto> goodsPaging(Long partnerId, Pageable pageable) {
+        return gameQueryRepository.searchGoodsPage(partnerId, pageable);
     }
 }

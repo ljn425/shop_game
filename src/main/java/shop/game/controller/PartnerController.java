@@ -205,4 +205,23 @@ public class PartnerController {
 
         return "redirect:/partner/game/goods";
     }
+
+    @GetMapping("/game/goods/{id}")
+    public String goodsDetail(@PathVariable Long id, Model model) {
+        GoodsDetailDto goodsDetail = gameService.findGoodsDetail(id);
+        log.debug("goodsDetail = {}", goodsDetail);
+
+        model.addAttribute("goodsDetailDto", goodsDetail);
+        return ViewConst.PARTNER_GAME_DETAIL;
+    }
+
+    @GetMapping("/game/goods/{id}/image-form")
+    public String goodsImageForm(@PathVariable Long id, Model model) {
+        GoodsDetailDto goodsDetail = gameService.findGoodsDetail(id);
+        log.debug("goodsDetail = {}", goodsDetail);
+
+        model.addAttribute("goodsDetailDto", goodsDetail);
+
+        return ViewConst.PARTNER_GAME_IMAGE;
+    }
 }

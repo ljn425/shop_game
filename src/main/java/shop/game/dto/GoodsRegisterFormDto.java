@@ -4,10 +4,8 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 import shop.game.common.annotation.ValidMultipartFile;
 import shop.game.enums.CategoryType;
-import shop.game.enums.GameType;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 

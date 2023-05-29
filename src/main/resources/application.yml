@@ -3,6 +3,7 @@ logging:
     shop.game: debug
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
+    org.apache.coyote.http11: debug
 
 
 

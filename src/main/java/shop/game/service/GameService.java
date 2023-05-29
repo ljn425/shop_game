@@ -8,10 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.game.common.file.FileStore;
 import shop.game.common.file.UploadFile;
-import shop.game.domain.Category;
-import shop.game.domain.Game;
-import shop.game.domain.GameImage;
-import shop.game.domain.Partner;
+import shop.game.domain.*;
+import shop.game.dto.GoodsDetailDto;
 import shop.game.dto.GoodsRegisterFormDto;
 import shop.game.dto.GoodsRegisterListDto;
 import shop.game.dto.SessionLoginDto;
@@ -22,6 +20,7 @@ import shop.game.repository.*;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -30,9 +29,13 @@ import java.util.Map;
 @Slf4j
 public class GameService {
     private final GameRepository gameRepository;
-
     private final GameQueryRepository gameQueryRepository;
     private final PartnerRepository partnerRepository;
+    private final CategoryRepository categoryRepository;
+    private final GameImageRepository gameImageRepository;
+    private final SpecRepository specRepository;
+
+    private final MovieRepository movieRepository;
     private final FileStore fileStore;
 
     @Transactional
@@ -83,5 +86,20 @@ public class GameService {
 
     public Page<GoodsRegisterListDto> goodsPaging(Long partnerId, Pageable pageable) {
         return gameQueryRepository.searchGoodsPage(partnerId, pageable);
+    }
+
+    public GoodsDetailDto findGoodsDetail(Long gameId) {
+        GoodsDetailDto goodsDetail = gameQueryRepository.findGoodsDetail(gameId);
+        List<Category> categories = categoryRepository.findByGameId(gameId);
+        List<GameImage> gameImages = gameImageRepository.findByGameIdAndImageType(gameId, ImageType.SCREENSHOT);
+        List<Movie> movies = movieRepository.findByGameId(gameId);
+        List<Spec> specs = specRepository.findByGameId(gameId);
+
+        goodsDetail.setCategories(categories);
+        goodsDetail.setGameImages(gameImages);
+        goodsDetail.setGameMovies(movies);
+        goodsDetail.setSpecs(specs);
+
+        return goodsDetail;
     }
 }

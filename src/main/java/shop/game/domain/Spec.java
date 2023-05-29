@@ -3,6 +3,7 @@ package shop.game.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.game.enums.OsType;
 
 import javax.persistence.*;
 
@@ -18,7 +19,8 @@ public class Spec extends Base{
     @JoinColumn(name = "game_id")
     private Game game;
 
-    private String os;
+    @Enumerated(EnumType.STRING)
+    private OsType os;
     private String processor;
     private String memory;
     private String graphics;

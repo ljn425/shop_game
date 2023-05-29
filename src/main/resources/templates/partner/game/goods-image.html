@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: common_header(~{::title}, ~{})}">
+    <title th:text="#{sideMenu.game.image}">title</title>
+</head>
+<body>
+
+<!-- ======= Header ======= -->
+<header th:replace="~{layout/partner/body-header :: body_header}"></header>
+<!-- End Header -->
+
+<!-- ======= Sidebar ======= -->
+<aside th:replace="~{layout/partner/left :: common_left}"></aside>
+<!-- End Sidebar -->
+
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1 th:text="#{sideMenu.game.image}">Subject</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item" th:text="#{sideMenu.game}">Top Menu</li>
+                <li class="breadcrumb-item active" th:text="#{sideMenu.game.image}">Main Menu</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"></h5>
+
+
+                        <!-- General Form Elements -->
+                        <form th:action method="post" enctype="multipart/form-data" th:object="${registerFormDto}">
+
+                        </form><!-- End General Form Elements -->
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</main><!-- End #main -->
+
+<footer th:replace="~{layout/footer :: common_footer(~{})}">
+</footer>
+
+</body>
+</html>

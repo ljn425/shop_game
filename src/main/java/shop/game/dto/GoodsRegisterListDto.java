@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class GoodsRegisterListDto {
+    private Long id;
     private String thumbnailName;
     private String gameName;
     private String developer;
@@ -17,7 +18,8 @@ public class GoodsRegisterListDto {
     private LocalDateTime createdDate;
 
     @QueryProjection
-    public GoodsRegisterListDto(String thumbnailName, String gameName, String developer, String publisher, LocalDateTime created_date) {
+    public GoodsRegisterListDto(Long id, String thumbnailName, String gameName, String developer, String publisher, LocalDateTime created_date) {
+        this.id = id;
         this.thumbnailName = thumbnailName;
         this.gameName = gameName;
         this.developer = developer;

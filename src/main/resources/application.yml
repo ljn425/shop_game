@@ -3,7 +3,7 @@ logging:
     shop.game: debug
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
-    org.apache.coyote.http11: debug
+#    org.apache.coyote.http11: debug
 
 
 
@@ -37,4 +37,6 @@ spring:
       max-request-size: 10MB
 
 file:
-  dir: D:/project/game/src/main/resources/static/assets/img/games/
+  dir: D:/project/images/
+  resource: file:///D:/project/images/
+  url: /upload/**

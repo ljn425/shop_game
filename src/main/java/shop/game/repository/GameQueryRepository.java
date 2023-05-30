@@ -31,7 +31,7 @@ public class GameQueryRepository {
         List<GoodsRegisterListDto> content = query.select(new QGoodsRegisterListDto(game.id, gameImage.storedName, game.name, game.developer, game.publisher, game.createdDate))
                 .from(game)
                 .join(game.gameImages, gameImage)
-                .where(partnerIdEq(partnerId), imageTypeEq())
+                .where(partnerIdEq(partnerId), imageTypeEq(ImageType.COVER))
                 .orderBy(game.createdDate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -40,7 +40,7 @@ public class GameQueryRepository {
         Long count = query.select(game.count())
                 .from(game)
                 .join(game.gameImages, gameImage)
-                .where(imageTypeEq())
+                .where(partnerIdEq(partnerId), imageTypeEq(ImageType.COVER))
                 .fetchOne();
 
         return PageableExecutionUtils.getPage(content, pageable, count::longValue);
@@ -50,7 +50,7 @@ public class GameQueryRepository {
         return query.select(new QGoodsDetailDto(game.id, game.name, game.developer, game.publisher, game.description, gameImage.storedName, game.createdDate))
                 .from(game)
                 .join(game.gameImages, gameImage)
-                .where(gameIdEq(gameId))
+                .where(gameIdEq(gameId), imageTypeEq(ImageType.COVER))
                 .fetchOne();
     }
 
@@ -62,8 +62,8 @@ public class GameQueryRepository {
         return game.partner.id.eq(partnerId);
     }
 
-    private BooleanExpression imageTypeEq() {
-        return gameImage.imageType.eq(ImageType.COVER);
+    private BooleanExpression imageTypeEq(ImageType imageType) {
+        return gameImage.imageType.eq(imageType);
     }
 
 

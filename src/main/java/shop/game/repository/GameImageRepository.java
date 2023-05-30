@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface GameImageRepository extends JpaRepository<GameImage, Long> {
     List<GameImage> findByGameIdAndImageType(Long gameId, Enum imageType);
+    GameImage findByStoredName(String filename);
 }
 

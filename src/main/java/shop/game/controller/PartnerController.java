@@ -224,4 +224,5 @@ public class PartnerController {
 
         return ViewConst.PARTNER_GAME_IMAGE;
     }
+
 }

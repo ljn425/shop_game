@@ -35,8 +35,45 @@
 
                 <div class="card">
                     <div class="card-body  pt-4 d-flex flex-column align-items-center">
-                        <img th:src="'/assets/img/games/'+${goodsDetailDto.storedFileName}" alt="Profile" width="100%">
+                        <!-- /assets/img/games/ -->
+                        <img th:src="'/upload/'+${goodsDetailDto.storedFileName}" alt="Profile" width="100%">
                         <h2 th:text="${goodsDetailDto.gameName}">게임 이름</h2>
+                    </div>
+                </div>
+                <div class="card">
+                    <button type="button" class="btn btn-primary" id="refresh_btn">
+                        <i class="bi bi-star me-1"></i> 업로드 적용
+                    </button>
+                    <div class="card-body  pt-4 d-flex flex-column align-items-center">
+                        <!-- Slides with indicators -->
+                        <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-indicators">
+<!--                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>-->
+<!--                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>-->
+<!--                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>-->
+                            </div>
+                            <div class="carousel-inner">
+<!--                                <div class="carousel-item active">-->
+<!--                                    <img src="/assets/img/slides-1.jpg" class="d-block w-100" alt="...">-->
+<!--                                </div>-->
+<!--                                <div class="carousel-item">-->
+<!--                                    <img src="/assets/img/slides-2.jpg" class="d-block w-100" alt="...">-->
+<!--                                </div>-->
+<!--                                <div class="carousel-item">-->
+<!--                                    <img src="/assets/img/slides-3.jpg" class="d-block w-100" alt="...">-->
+<!--                                </div>-->
+                            </div>
+
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+
+                        </div><!-- End Slides with indicators -->
                     </div>
                 </div>
 
@@ -111,40 +148,13 @@
                                 <!-- goods-image -->
                                 <div class="card row mb-3" >
                                     <div class="card-body">
-                                        <h5 class="card-title">With indicators</h5>
-                                        <!-- Slides with indicators -->
-                                        <div th:if="${goodsDetailDto.gameImages.size() != 0}" id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-                                            <div class="carousel-indicators">
-                                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                                            </div>
-                                            <div class="carousel-inner">
-                                                <div class="carousel-item active">
-                                                    <img src="assets/img/slides-1.jpg" class="d-block w-100" alt="...">
-                                                </div>
-                                                <div class="carousel-item">
-                                                    <img src="assets/img/slides-2.jpg" class="d-block w-100" alt="...">
-                                                </div>
-                                                <div class="carousel-item">
-                                                    <img src="assets/img/slides-3.jpg" class="d-block w-100" alt="...">
-                                                </div>
-                                            </div>
+                                        <h5 class="card-title">이미지
 
-                                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                <span class="visually-hidden">Previous</span>
-                                            </button>
-                                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                                <span class="visually-hidden">Next</span>
-                                            </button>
-
-                                        </div><!-- End Slides with indicators -->
-
+                                        </h5>
                                         <!-- 이미지 업로드 영역 -->
-                                        <input type="file" th:class="filepond" name="file" data-allow-reorder="true" multiple data-max-file-size="3MB" data-max-files="3">
-
+                                        <fieldset>
+                                            <input type="file" th:class="filepond" name="file" data-allow-reorder="true" multiple data-max-file-size="3MB" data-max-files="3">
+                                        </fieldset>
                                     </div>
                                 </div>
                             </div>
@@ -229,6 +239,7 @@
                 </div>
 
             </div>
+
         </div>
     </section>
 
@@ -238,32 +249,145 @@
 <footer th:replace="~{layout/footer :: common_footer(~{::script})}">
     <script th:src="@{/assets/vendor/filepond/filepond-plugin-image-preview.min.js}"></script>
     <script th:src="@{/assets/vendor/filepond/filepond.min.js}"></script>
-    <script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script th:inline="javascript">
 
         // Register the plugin
         FilePond.registerPlugin(FilePondPluginImagePreview);
 
         // Get a reference to the file input element
-        const inputElement = document.querySelector('input[type="file"]');
+         const inputElement = document.querySelector('input[type="file"]');
+        //const inputElement = document.querySelector('fieldset');
 
         // Create a FilePond instance
         const pond = FilePond.create(inputElement, {
+            allowMultiple: true,
             server: {
                 process: {
                     url: '/api/partner/game/image',
                     method: 'POST',
                     withCredentials: false,
+                    headers: {
+                        'x-game-number': [[${goodsDetailDto.id}]]
+                    },
                     onload: (response) => {
-                        console.log(response);
-                        console.log(JSON.parse(response).key);
-                        return JSON.parse(response).key;
+                        return JSON.parse(response).filename;
                     },
                     onerror: (response) => response.data,
                 },
-                revert: '/api/partner/game/image',
-            }
+                revert: {
+                    url:'/api/partner/game/image',
+                    method: 'DELETE',
+                    onload: (response) => {
+                        console.log("delete");
+                    },
+                    onerror: (response) => response.data,
+                },
+
+            },
+            labelIdle: '업로드할 이미지를 끌어다 놓거나 <span class="filepond--label-action">여기를 클릭</span>하세요.'
         });
 
+        //등록된 이미지 화면에 뿌리기
+
+        //파일 추가 pond.addFiles('', '');
+        //pond.addFile('http://localhost:8080/assets/img/games/d5d15724-8c6d-4988-bb81-76825ae32f99.png');
+
+        //delete 시 response 값을 참조해서 이미지 리스트 뿌리기
+
+        function fetchData() {
+            // 서버 요청을 보내는 비동기 함수
+            return axios.get('/api/partner/game/image/load', {
+                params: {
+                    gameNumber: [[${goodsDetailDto.id}]]
+                }
+            })
+                .then(response => {
+                    console.log(response.data);
+                    // 서버 응답을 처리하는 로직
+                    return response.data; // 처리된 데이터 반환
+                })
+                .catch(error => {
+                    // 서버 요청 실패 시 에러 처리
+                    console.error('Request error:', error);
+                    throw error; // 에러를 상위로 전파
+                });
+        }
+
+        // 페이지 로드 시 fetchData 함수 호출
+        fetchData()
+            .then(data => {
+                // 데이터 처리 로직
+                data.fileNames.forEach(function (item, index, array) {
+                    console.log(item, index);
+                    pond.addFile('http://localhost:8080/upload/' + item.filename);
+                });
+
+                //이미지 슬라이드
+                updateCarousel(data.fileNames);
+            })
+            .catch(error => {
+                // 에러 처리 로직
+                // ...
+            });
+
+        // 이미지 데이터를 받아서 HTML 태그를 변경하는 함수
+        function updateCarousel(images) {
+            // carousel-indicators 엘리먼트 선택
+            const indicatorsElement = document.querySelector('.carousel-indicators');
+
+            // carousel-inner 엘리먼트 선택
+            const innerElement = document.querySelector('.carousel-inner');
+
+            // 이미지 데이터를 순회하면서 HTML 태그 생성 및 추가
+            images.forEach((image, index) => {
+                console.log("슬라이드 이미지 ");
+                // carousel-indicators에 버튼 엘리먼트 추가
+                const indicatorButton = document.createElement('button');
+                indicatorButton.setAttribute('type', 'button');
+                indicatorButton.setAttribute('data-bs-target', '#carouselExampleIndicators');
+                indicatorButton.setAttribute('data-bs-slide-to', index.toString());
+                if (index === 0) {
+                    indicatorButton.classList.add('active');
+                    indicatorButton.setAttribute('aria-current', 'true');
+                }
+                indicatorButton.setAttribute('aria-label', `Slide ${index + 1}`);
+                indicatorsElement.appendChild(indicatorButton);
+
+                // carousel-inner에 이미지 엘리먼트 추가
+                const carouselItem = document.createElement('div');
+                carouselItem.classList.add('carousel-item');
+                if (index === 0) {
+                    carouselItem.classList.add('active');
+                }
+                const imageElement = document.createElement('img');
+                imageElement.setAttribute('src', `/upload/`+image.filename);
+                imageElement.classList.add('d-block', 'w-100');
+                imageElement.setAttribute('alt', '...');
+                carouselItem.appendChild(imageElement);
+                innerElement.appendChild(carouselItem);
+            });
+        }
+
+        document.getElementById('refresh_btn').addEventListener('click', function () {
+            // carousel-indicators 엘리먼트 선택
+            const indicatorsElement = document.querySelector('.carousel-indicators');
+            // carousel-inner 엘리먼트 선택
+            const innerElement = document.querySelector('.carousel-inner');
+
+            // 기존에 있던 HTML 태그 제거
+            indicatorsElement.innerHTML = '';
+            innerElement.innerHTML = '';
+
+            // 이미지 데이터 요청 및 화면 업데이트 함수 실행
+            fetchData()
+                .then(data => {
+                    updateCarousel(data.fileNames);
+                })
+                .catch(error => {
+                    console.error('Failed to fetch images:', error);
+                });
+        })
 
 
     </script>

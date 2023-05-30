@@ -49,7 +49,7 @@
                             <tbody >
                             <tr th:each="goods, goodsStat :${pageList}">
                                 <th scope="row" th:text="${goodsStat.count}">인덱스</th>
-                                <td><img th:src="'/assets/img/games/'+${goods.thumbnailName}" width="50" height="50"></td>
+                                <td><img th:src="'/upload/'+${goods.thumbnailName}" width="50" height="50"></td>
                                 <td><a th:href="@{${pagePath}+'/'+${goods.id}}" th:text="${goods.gameName}"></a></td>
                                 <td th:text="${goods.developer}">개발사</td>
                                 <td th:text="${goods.publisher}">배급사</td>

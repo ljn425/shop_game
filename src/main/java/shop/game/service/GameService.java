@@ -6,13 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import shop.game.common.file.FileStore;
 import shop.game.common.file.UploadFile;
 import shop.game.domain.*;
-import shop.game.dto.GoodsDetailDto;
-import shop.game.dto.GoodsRegisterFormDto;
-import shop.game.dto.GoodsRegisterListDto;
-import shop.game.dto.SessionLoginDto;
+import shop.game.dto.*;
 import shop.game.enums.CategoryType;
 import shop.game.enums.GameType;
 import shop.game.enums.ImageType;
@@ -22,6 +20,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +37,12 @@ public class GameService {
     private final MovieRepository movieRepository;
     private final FileStore fileStore;
 
+    /**
+     * 게임 기본 정보 등록
+     * @param registerFormDto
+     * @param sessionLoginDto
+     * @throws IOException
+     */
     @Transactional
     public void register(GoodsRegisterFormDto registerFormDto, SessionLoginDto sessionLoginDto) throws IOException {
         UploadFile uploadFile = fileStore.storeFile(registerFormDto.getThumbnail());
@@ -54,14 +59,7 @@ public class GameService {
                 .build();
         gameRepository.save(game);
 
-        GameImage gameImage = GameImage.builder()
-                .game(game)
-                .originalName(uploadFile.getUploadFileName())
-                .storedName(uploadFile.getStoreFileName())
-                .extension(uploadFile.getExt())
-                .size(uploadFile.getFileSize())
-                .imageType(ImageType.COVER)
-                .build();
+        GameImage gameImage = buildGameImage(game, uploadFile, ImageType.COVER);
         game.getGameImages().add(gameImage);
 
         for (CategoryType categoryType : registerFormDto.getCategoryTypes()) {
@@ -88,6 +86,11 @@ public class GameService {
         return gameQueryRepository.searchGoodsPage(partnerId, pageable);
     }
 
+    /**
+     * 게임 상세 정보 조회
+     * @param gameId
+     * @return
+     */
     public GoodsDetailDto findGoodsDetail(Long gameId) {
         GoodsDetailDto goodsDetail = gameQueryRepository.findGoodsDetail(gameId);
         List<Category> categories = categoryRepository.findByGameId(gameId);
@@ -102,4 +105,72 @@ public class GameService {
 
         return goodsDetail;
     }
+
+    /**
+     * FilePondProcess(이미지업로드) 처리
+     * @param file
+     * @param gameId
+     * @return
+     * @throws IOException
+     */
+    @Transactional
+    public FilePondProcessDto uploadFile(MultipartFile file, Long gameId) throws IOException{
+        GameImage findStoreName = gameImageRepository.findByStoredName(file.getOriginalFilename());
+
+        String storeName = "";
+
+        if (findStoreName == null) {
+            UploadFile uploadFile = fileStore.storeFile(file);
+            Game game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Game not found"));
+
+            GameImage gameImage = buildGameImage(game, uploadFile, ImageType.SCREENSHOT);
+
+            gameImageRepository.save(gameImage);
+
+            storeName = uploadFile.getStoreFileName();
+
+        }
+
+        storeName = file.getOriginalFilename();
+
+        return FilePondProcessDto.builder()
+                .filename(storeName)
+                .build();
+    }
+
+    private GameImage buildGameImage(Game game, UploadFile uploadFile, ImageType imageType) {
+        GameImage gameImage = GameImage.builder()
+                .game(game)
+                .originalName(uploadFile.getUploadFileName())
+                .storedName(uploadFile.getStoreFileName())
+                .extension(uploadFile.getExt())
+                .size(uploadFile.getFileSize())
+                .imageType(imageType)
+                .build();
+        return gameImage;
+    }
+
+    /**
+     * FilePondProcess(이미지삭제) 처리
+     * @param filename
+     */
+    @Transactional
+    public void deleteFile(String filename) throws IOException {
+        GameImage gameImage = gameImageRepository.findByStoredName(filename);
+        gameImageRepository.delete(gameImage);
+        fileStore.deleteFile(filename);
+    }
+
+    public List<FilePondProcessDto> findGameImages(Long gameId, ImageType imageType) {
+        List<GameImage> gameImages = gameImageRepository.findByGameIdAndImageType(gameId, imageType);
+        List<FilePondProcessDto> result = gameImages.stream()
+                .map(gameImage -> FilePondProcessDto.builder()
+                        .filename(gameImage.getStoredName())
+                        .build())
+                .collect(Collectors.toList());
+
+        return result;
+    }
+
+
 }

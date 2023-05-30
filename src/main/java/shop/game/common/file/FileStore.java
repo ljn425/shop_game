@@ -2,6 +2,7 @@ package shop.game.common.file;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -42,6 +43,11 @@ public class FileStore {
             }
         }
         return storeFileResult;
+    }
+
+    public boolean deleteFile(String filename) throws IOException {
+        FileSystemUtils.deleteRecursively(new File(getFullPath(filename)));
+        return true;
     }
     private String createStoreFileName(String originalFilename) {
         String ext = extractExt(originalFilename);
